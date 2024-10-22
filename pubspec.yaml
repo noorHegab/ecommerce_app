@@ -54,3 +54,9 @@ fonts:
     fonts:
       - asset: assets/fonts/Poppins-Regular.ttf
 
+flutter_native_splash:
+  color: "#2196F3" # لون الخلفية الأزرق
+  image: assets/images/route_splash.png
+  android: true
+  ios: true
+  fullscreen: true

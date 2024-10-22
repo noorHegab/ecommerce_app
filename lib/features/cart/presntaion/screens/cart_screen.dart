@@ -30,9 +30,7 @@ class CartScreen extends StatelessWidget {
             IconButton(
               onPressed: () {},
               icon: ImageIcon(
-                AssetImage(
-                  IconsAssets.icSearch,
-                ),
+                AssetImage(IconsAssets.icSearch),
                 color: ColorManager.primary,
               ),
             ),
@@ -46,55 +44,67 @@ class CartScreen extends StatelessWidget {
           ],
         ),
         body: BlocConsumer<CartCubit, CartState>(
-          listener: (context, state) {},
+          listener: (context, state) {
+            if (state is CartDeleteSuccessState) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Item deleted successfully')),
+              );
+              // إذا كنت بحاجة إلى تحديث قائمة العناصر بعد الحذف، يمكنك استدعاء getCart() مرة أخرى
+              // Cubit.get(context).getCart();
+            } else if (state is CartDeleteErrorState) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Failed to delete item')),
+              );
+            }
+          },
           builder: (context, state) {
             var cubit = CartCubit.get(context);
-            return state is GetCartSuccessState
-                ? Padding(
-                    padding: const EdgeInsets.all(AppPadding.p14),
-                    child: Column(
-                      children: [
-                        Expanded(
-                          // the list of cart items ===============
-                          child: ListView.separated(
-                            itemBuilder: (context, index) => CartItemWidget(
-                              imagePath: cubit.cartData?.cart.products[index]
-                                      .imageCover ??
+            if (state is GetCartLoadingState) {
+              return Center(child: CircularProgressIndicator());
+            } else if (state is GetCartSuccessState) {
+              return Padding(
+                padding: const EdgeInsets.all(AppPadding.p14),
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: ListView.separated(
+                        itemBuilder: (context, index) => CartItemWidget(
+                          imagePath:
+                              cubit.cartData?.cart.products[index].imageCover ??
                                   "",
-                              title:
-                                  cubit.cartData?.cart.products[index].title ??
-                                      "",
-                              price: cubit.cartData!.cart.products[index].price
-                                  .toInt(),
-                              quantity: cubit
-                                  .cartData!.cart.products[index].quantity
-                                  .toInt(),
-                              onDeleteTap: () {},
-                              onDecrementTap: (value) {},
-                              onIncrementTap: (value) {},
-                              size: 40,
-                              color: Colors.black,
-                              colorName: 'Black',
-                            ),
-                            separatorBuilder: (context, index) =>
-                                SizedBox(height: AppSize.s12.h),
-                            itemCount: 2,
-                          ),
+                          title:
+                              cubit.cartData?.cart.products[index].title ?? "",
+                          price: cubit.cartData!.cart.products[index].price
+                              .toInt(),
+                          quantity: cubit
+                              .cartData!.cart.products[index].quantity
+                              .toInt(),
+                          onDeleteTap: () {
+                            cubit.deleteCart(
+                                cubit.cartData!.cart.products[index].id);
+                          },
+                          onDecrementTap: (value) {},
+                          onIncrementTap: (value) {},
+                          size: 40,
+                          color: Colors.black,
+                          colorName: 'Black',
                         ),
-                        // the total price and checkout button========
-                        TotalPriceAndCheckoutBotton(
-                          totalPrice:
-                              cubit.cartData?.cart?.totalCartPrice?.toInt() ??
-                                  0,
-                          checkoutButtonOnTap: () {},
-                        ),
-                        SizedBox(height: 10.h),
-                      ],
+                        separatorBuilder: (context, index) =>
+                            SizedBox(height: AppSize.s12.h),
+                        itemCount: cubit.cartData!.cart.products.length,
+                      ),
                     ),
-                  )
-                : Center(
-                    child: CircularProgressIndicator(),
-                  );
+                    TotalPriceAndCheckoutBotton(
+                      totalPrice:
+                          cubit.cartData?.cart?.totalCartPrice?.toInt() ?? 0,
+                      checkoutButtonOnTap: () {},
+                    ),
+                    SizedBox(height: 10.h),
+                  ],
+                ),
+              );
+            }
+            return Center(child: Text('No items in the cart.'));
           },
         ),
       ),

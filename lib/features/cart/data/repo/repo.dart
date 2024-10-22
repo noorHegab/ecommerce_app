@@ -8,8 +8,10 @@ import 'package:injectable/injectable.dart';
 
 @Injectable(as: CartRepo)
 class CartRepoImp implements CartRepo {
-  CartDataSource dataSource;
+  final CartDataSource dataSource;
+
   CartRepoImp(this.dataSource);
+
   @override
   Future<Either<String, CartData>> getCart() async {
     try {
@@ -28,6 +30,34 @@ class CartRepoImp implements CartRepo {
       }
 
       return Left(e.toString());
+    }
+  }
+
+  @override
+  Future<String> updateCart({required String count}) async {
+    try {
+      var response = await dataSource.updateCart(count: count);
+      if (response.statusCode == 200) {
+        return response.data["message"] ?? "";
+      } else {
+        throw response.data["message"];
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<String> deleteCart({required String cartId}) async {
+    try {
+      var response = await dataSource.deleteCart(cartId: cartId);
+      if (response.statusCode == 200) {
+        return response.data["message"] ?? "";
+      } else {
+        throw response.data["message"];
+      }
+    } catch (e) {
+      rethrow;
     }
   }
 }

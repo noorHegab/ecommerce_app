@@ -1,13 +1,12 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
 // **************************************************************************
-// InjectableConfigGenerator
-// **************************************************************************
 
 // ignore_for_file: type=lint
 // coverage:ignore-file
 
-// ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:ecommerce/features/cart/domain/use_cse/delete_cart_use_case.dart';
+import 'package:ecommerce/features/cart/domain/use_cse/update_cart_use_case.dart';
 import 'package:get_it/get_it.dart' as _i1;
 import 'package:injectable/injectable.dart' as _i2;
 
@@ -45,16 +44,11 @@ import '../../features/products_screen/presentation/manager/cubit.dart' as _i25;
 import '../services/network_service.dart' as _i3;
 
 extension GetItInjectableX on _i1.GetIt {
-// initializes the registration of main-scope dependencies inside of GetIt
   _i1.GetIt init({
     String? environment,
     _i2.EnvironmentFilter? environmentFilter,
   }) {
-    final gh = _i2.GetItHelper(
-      this,
-      environment,
-      environmentFilter,
-    );
+    final gh = _i2.GetItHelper(this, environment, environmentFilter);
     gh.singleton<_i3.Network>(() => _i3.Network());
     gh.factory<_i4.ProductDataSource>(
         () => _i5.ProductDataSourceImp(gh<_i3.Network>()));
@@ -74,7 +68,13 @@ extension GetItInjectableX on _i1.GetIt {
         () => _i18.GetCategoriesUseCase(gh<_i15.MainRepo>()));
     gh.factory<_i19.GetWashListUseCase>(
         () => _i19.GetWashListUseCase(gh<_i15.MainRepo>()));
-    gh.factory<_i20.CartCubit>(() => _i20.CartCubit(gh<_i14.GetCartUseCase>()));
+
+    // تأكد من إضافة UpdateCartUseCase
+    gh.factory<UpdateCartUseCase>(() => UpdateCartUseCase(gh<_i10.CartRepo>()));
+    gh.factory<DeleteCartUseCase>(() => DeleteCartUseCase(gh<_i10.CartRepo>()));
+
+    gh.factory<_i20.CartCubit>(() => _i20.CartCubit(gh<_i14.GetCartUseCase>(),
+        gh<UpdateCartUseCase>(), gh<DeleteCartUseCase>()));
     gh.factory<_i21.AddCartUseCase>(
         () => _i21.AddCartUseCase(gh<_i12.ProductRepo>()));
     gh.factory<_i22.AddWashListUseCase>(

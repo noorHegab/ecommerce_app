@@ -61,4 +61,18 @@ class Network {
       options: Options(headers: headers),
     );
   }
+
+  Future<Response> delete({
+    required String path,
+    Object? data,
+    Map<String, dynamic>? queryParameters,
+    Map<String, dynamic>? headers,
+  }) async {
+    return dio.delete(
+      path,
+      data: data,
+      queryParameters: queryParameters,
+      options: Options(headers: headers),
+    );
+  }
 }
